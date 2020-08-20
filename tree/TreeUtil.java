@@ -1,6 +1,7 @@
 
 import com.alibaba.fastjson.JSON;
 import bean.UserTags;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -10,111 +11,67 @@ import java.util.*;
  */
 
 public class TreeUtil {
-    private boolean isEqualsParentId(String p1, String p2) {
-        if (p1 != null && p2 != null) {
-            return p1.equals(p2);
-        }
-        if (p1 == null && p2 == null) {
-            return true;
-        }
-        if (p1 == null) {
-            return "".equals(p2);
-        }
-        if (p2 == null) {
-            return "".equals(p1);
-        }
-        return false;
-    }
+    private List<UserTags> topList = new ArrayList<>();
+    private List<UserTags> subList = new ArrayList<>();
+    private Set<String> parentIdSet = new HashSet<>();
 
-    public List<UserTags> getChildTree(List<UserTags> list, String parentId) {
-        List<UserTags> resList = new ArrayList<>();
+    public List<UserTags> getChildTree(List<UserTags> list, Set<String> topIdSet) {
         if (list != null && list.size() > 0) {
-            for (UserTags userTags : list) {
-                if (isEqualsParentId(userTags.getParentId(), parentId)) {
-                    recursionFn(list, userTags);
-                    resList.add(userTags);
-                }
-            }
-        }
-        return resList;
-    }
-
-    public List<UserTags> getChildTree(List<UserTags> list, String[] topIdArr) {
-        List<UserTags> resList = new ArrayList<>();
-
-        if (list != null && list.size() > 0) {
-            for (String topId : topIdArr) {
-                for (UserTags userTags : list) {
-                    if (isEqualsParentId(userTags.getParentId(), topId)) {
-                        recursionFn(list, userTags);
-                        resList.add(userTags);
-                    }
-                }
-            }
-        }
-        return resList;
-    }
-
-    public List<UserTags> getChildTree(List<UserTags> list) {
-        if (list != null && list.size() > 0) {
-            List<UserTags> topList = new ArrayList<>();
-            List<UserTags> subList = new ArrayList<>();
             // 区分最顶级的list和subList
-            getTopAndSubList(list, topList, subList);
+            getTopAndSubList(list, topIdSet);
 
-            List<UserTags> resList = getTree(topList, subList);
-            if (resList != null) {
-                return resList;
-            }
+            return getTree();
         }
         return list;
     }
 
-    private List<UserTags> getTree(List<UserTags> topList, List<UserTags> subList) {
+    /**
+     * 区分顶级节点和子节点
+     */
+    private void getTopAndSubList(List<UserTags> list, Set<String> topIdSet) {
+        for (UserTags userTags : list) {
+            if (StringUtils.isNotEmpty(userTags.getParentId())) {
+                parentIdSet.add(userTags.getParentId());
+            }
+        }
+        for (UserTags userTags : list) {
+            //获取最顶级的list
+            if (topIdSet.contains(userTags.getTagId())) {
+                topList.add(userTags);
+            } else {
+                subList.add(userTags);
+            }
+        }
+    }
+
+    /**
+     * 创建树形结构
+     */
+    private List<UserTags> getTree() {
+        List<UserTags> resList = new ArrayList<>();
         if (topList.size() > 0 && subList.size() > 0) {
-            List<UserTags> resList = new ArrayList<>();
             for (UserTags topTags : topList) {
                 List<UserTags> subOneList = new ArrayList<>();
 
                 for (UserTags sub : subList) {
                     // 根据传入的某个父节点Id, 遍历改父节点的所有子节点
-                    if (isEqualsParentId(sub.getParentId(), topTags.getTagId())) {
+                    if (StringUtils.equals(sub.getParentId(), topTags.getTagId())) {
                         recursionFn(subList, sub);
                         subOneList.add(sub);
                     }
                 }
-
-                topTags.setChildren(subOneList);
-
+                if (subOneList.size()>0){
+                    topTags.setChildren(subOneList);
+                }
                 resList.add(topTags);
             }
-            return resList;
         }
-        return null;
+        return resList;
     }
 
-    private void getTopAndSubList(List<UserTags> list, List<UserTags> topList, List<UserTags> subList) {
-        Map<String, String> idMap = new HashMap<>();
-        for (UserTags userTags : list) {
-            //归并所有list的id集合
-            idMap.put(userTags.getTagId(), userTags.getTagId());
-        }
-
-        for (UserTags userTags : list) {
-            //获取最顶级的list
-            if (StringUtils.isEmpty(userTags.getParentId())) {
-                topList.add(userTags);
-            } else {
-                String id = idMap.get(userTags.getParentId());
-                if (StringUtils.isEmpty(id)) {
-                    topList.add(userTags);
-                } else {
-                    subList.add(userTags);
-                }
-            }
-        }
-    }
-
+    /**
+     * 递归 将子节点的list归并到父节点中
+     */
     private void recursionFn(List<UserTags> list, UserTags userTags) {
         List<UserTags> childList = getChildList(list, userTags);
         if (childList.size() > 0) {
@@ -123,7 +80,7 @@ public class TreeUtil {
 
         for (UserTags child : childList) {
             // 判断是否有子节点
-            if (hasChild(list, child)) {
+            if (hasChild(child)) {
                 recursionFn(list, child);
             }
         }
@@ -135,15 +92,18 @@ public class TreeUtil {
     private List<UserTags> getChildList(List<UserTags> list, UserTags userTags) {
         List<UserTags> childList = new ArrayList<>();
         for (UserTags tags : list) {
-            if (isEqualsParentId(tags.getParentId(), userTags.getTagId())) {
+            if (StringUtils.equals(tags.getParentId(), userTags.getTagId())) {
                 childList.add(tags);
             }
         }
         return childList;
     }
 
-    private boolean hasChild(List<UserTags> list, UserTags tags) {
-        return getChildList(list, tags).size() > 0;
+    /**
+     * 判断当前节点是否有子节点
+     */
+    private boolean hasChild(UserTags tags) {
+        return parentIdSet.contains(tags.getTagId());
     }
 
 
@@ -173,17 +133,30 @@ public class TreeUtil {
         tags4.setTagId("1-1-1-1");
         tags4.setParentId("1-1-1");
 
+        UserTags tags7 = new UserTags();
+        tags7.setTagId("2");
+        tags7.setParentId("");
+        UserTags tags8 = new UserTags();
+        tags8.setTagId("2-1");
+        tags8.setParentId("2");
+
+
         userTags.add(tags);
         userTags.add(tags2);
         userTags.add(tags3);
         userTags.add(tags4);
         userTags.add(tags5);
         userTags.add(tags6);
+        userTags.add(tags7);
+        userTags.add(tags8);
 
+        Set<String> set = new HashSet<>();
+        set.add("1");
+//        set.add("2");
 
         if (userTags != null && userTags.size() > 0) {
             TreeUtil treeUtil = new TreeUtil();
-            List<UserTags> tree = treeUtil.getChildTree(userTags);
+            List<UserTags> tree = treeUtil.getChildTree(userTags, set);
             System.out.println(JSON.toJSONString(tree));
         }
     }
