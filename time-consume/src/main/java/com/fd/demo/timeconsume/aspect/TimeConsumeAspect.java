@@ -4,6 +4,7 @@ package com.fd.demo.timeconsume.aspect;
  * @author ：zxq
  * @date ：Created in 2020/8/20 18:00
  */
+
 import com.fd.demo.timeconsume.annotation.TimeConsume;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -26,7 +27,8 @@ public class TimeConsumeAspect {
         long millis = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
         Signature signature = proceedingJoinPoint.getSignature();
         Class<?> targetClass = proceedingJoinPoint.getTarget().getClass();
-        log.info("spend time : {} ms --- ({}.{})",  millis, targetClass.getName(), signature.getName());
+        log.info("{}.{} [spend time : {} ms] --- ({})",
+                targetClass.getSimpleName(), signature.getName(), millis, targetClass.getPackage().getName());
         return result;
     }
 }
