@@ -1,7 +1,10 @@
 
 import com.alibaba.fastjson.JSON;
+import annotation.TimeConsume;
 import bean.UserTags;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -9,14 +12,20 @@ import java.util.*;
  * @author ：zxq
  * @date ：Created in 2020/8/19 17:46
  */
-
+@Component
+@Slf4j
 public class TreeUtil {
-    private List<UserTags> topList = new ArrayList<>();
-    private List<UserTags> subList = new ArrayList<>();
-    private Set<String> parentIdSet = new HashSet<>();
+    private List<UserTags> topList;
+    private List<UserTags> subList;
+    private Set<String> parentIdSet;
 
+    @TimeConsume
     public List<UserTags> getChildTree(List<UserTags> list, Set<String> topIdSet) {
         if (list != null && list.size() > 0) {
+            topList = new ArrayList<>();
+            subList = new ArrayList<>();
+            parentIdSet = new HashSet<>();
+
             // 区分最顶级的list和subList
             getTopAndSubList(list, topIdSet);
 
@@ -42,6 +51,7 @@ public class TreeUtil {
                 subList.add(userTags);
             }
         }
+        topList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
     }
 
     /**
@@ -61,6 +71,7 @@ public class TreeUtil {
                     }
                 }
                 if (subOneList.size()>0){
+                    subOneList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
                     topTags.setChildren(subOneList);
                 }
                 resList.add(topTags);
@@ -96,6 +107,7 @@ public class TreeUtil {
                 childList.add(tags);
             }
         }
+        childList.sort((o1, o2) -> (o2.getSortNumber()-o1.getSortNumber()));
         return childList;
     }
 
