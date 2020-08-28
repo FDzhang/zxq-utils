@@ -20,6 +20,7 @@ public class TreeUtil {
     private List<UserTags> topList;
     private List<UserTags> subList;
     private Set<String> parentIdSet;
+    private Integer maxDeep = 2;
 
     @TimeConsume
     public List<UserTags> getChildTree(List<UserTags> list, Set<String> topIdSet) {
@@ -53,7 +54,7 @@ public class TreeUtil {
                 subList.add(userTags);
             }
         }
-        topList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
+//        topList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
     }
 
     /**
@@ -68,12 +69,12 @@ public class TreeUtil {
                 for (UserTags sub : subList) {
                     // 根据传入的某个父节点Id, 遍历改父节点的所有子节点
                     if (StringUtils.equals(sub.getParentId(), topTags.getTagId())) {
-                        recursionFn(subList, sub);
+                        recursionFnDeep(subList, sub, 1);
                         subOneList.add(sub);
                     }
                 }
-                if (subOneList.size()>0){
-                    subOneList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
+                if (subOneList.size() > 0) {
+//                    subOneList.sort((o1, o2) -> -(o2.getSortNumber()-o1.getSortNumber()));
                     topTags.setChildren(subOneList);
                 }
                 resList.add(topTags);
@@ -100,6 +101,27 @@ public class TreeUtil {
     }
 
     /**
+     * 递归 将子节点的list归并到父节点中
+     */
+    private void recursionFnDeep(List<UserTags> list, UserTags userTags, Integer deep) {
+        if (deep >= maxDeep) {
+            return;
+        }
+
+        List<UserTags> childList = getChildList(list, userTags);
+        if (childList.size() > 0) {
+            userTags.setChildren(childList);
+        }
+
+        for (UserTags child : childList) {
+            // 判断是否有子节点
+            if (hasChild(child)) {
+                recursionFnDeep(list, child, deep + 1);
+            }
+        }
+    }
+
+    /**
      * 得到子节点列表
      */
     private List<UserTags> getChildList(List<UserTags> list, UserTags userTags) {
@@ -109,7 +131,7 @@ public class TreeUtil {
                 childList.add(tags);
             }
         }
-        childList.sort((o1, o2) -> (o2.getSortNumber()-o1.getSortNumber()));
+//        childList.sort((o1, o2) -> (o2.getSortNumber()-o1.getSortNumber()));
         return childList;
     }
 
