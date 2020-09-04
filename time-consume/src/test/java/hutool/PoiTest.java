@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.fd.demo.timeconsume.bean.Person;
 import com.fd.demo.timeconsume.bean.TestBean;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.Test;
@@ -184,11 +185,12 @@ public class PoiTest {
 
         // 通过工具类创建writer，默认创建xls格式
         ExcelWriter writer = ExcelUtil.getWriter(true);
-
+//        writer.setDefaultRowHeight(30);
+//        writer.setColumnWidth(4,20);
         // 定义单元格背景色
         StyleSet style = writer.getStyleSet();
         // 第二个参数表示是否也设置头部单元格背景
-        style.setBackgroundColor(IndexedColors.RED, false);
+//        style.setBackgroundColor(IndexedColors.RED, false);
 
         //设置内容字体
         Font font = writer.createFont();
