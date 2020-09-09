@@ -40,14 +40,13 @@ public class Depot {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                size += 1;
-                System.out.println(Thread.currentThread().getName() + " 生产了一个 " + 1 + " 总共还有 " + size);
-
-                //唤醒消费者线程
-                consumerCondition.signal();
-
             }
+
+            size += 1;
+            System.out.println(Thread.currentThread().getName() + " 生产了一个 " + 1 + " 总共还有 " + size);
+
+            //唤醒消费者线程
+            consumerCondition.signal();
         } finally {
             lock.unlock();
         }
@@ -68,12 +67,13 @@ public class Depot {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                size -= 1;
-                System.out.println(Thread.currentThread().getName() + " 消费者消费了 " + 1 + " 个，总共还有 " + size);
-
-                //唤醒生产者线程
-                prodCondition.signal();
             }
+
+            size -= 1;
+            System.out.println(Thread.currentThread().getName() + " 消费者消费了 " + 1 + " 个，总共还有 " + size);
+
+            //唤醒生产者线程
+            prodCondition.signal();
 
         } finally {
             lock.unlock();
