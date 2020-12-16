@@ -37,4 +37,16 @@ public class IdUtilTest {
         long snowflakeId = snowflake.nextId();
         System.out.println(snowflakeId);
     }
+
+    @Test
+    public void test1() {
+        //参数1为终端ID
+        //参数2为数据中心ID
+        Snowflake snowflake = IdUtil.getSnowflake(1, 1);
+        long snowflakeId = snowflake.nextId();
+        String s = "1324248431316832256";
+        System.out.println(s.length());
+        System.out.println(snowflakeId);
+        System.out.println((snowflakeId+"").length());
+    }
 }
