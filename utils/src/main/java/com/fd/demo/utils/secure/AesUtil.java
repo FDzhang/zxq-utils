@@ -1,5 +1,6 @@
 package com.fd.demo.utils.secure;
 
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.Mode;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Aes
+ *
  * @author ：zxq
  * @date ：Created in 2020/12/16 17:43
  */
@@ -48,7 +51,7 @@ public class AesUtil {
      * @return 加密后的Base64
      */
     public static String encryptBase64(String data, String aesKey, String iv) {
-        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
+        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(CharsetUtil.CHARSET_UTF_8), iv.getBytes(CharsetUtil.CHARSET_UTF_8));
         return aes.encryptBase64(data);
     }
 
@@ -59,7 +62,7 @@ public class AesUtil {
      * @return 解密后的String
      */
     public static String decryptStr(String data, String aesKey, String iv) {
-        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
+        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(CharsetUtil.CHARSET_UTF_8), iv.getBytes(CharsetUtil.CHARSET_UTF_8));
         return aes.decryptStr(data);
     }
 }
