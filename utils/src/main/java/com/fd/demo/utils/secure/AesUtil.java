@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class AesUtil {
 
     /**
-     * 生成一个随机的 128 位 AES秘钥
+     * 生成一个随机的 128 位 AES秘钥 (length=32)
      */
     public static String generateHexAesKey() {
         byte[] encoded = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
@@ -34,7 +34,7 @@ public class AesUtil {
     }
 
     /**
-     * 生成一个 128位 16进制的iv
+     * 生成一个16进制的iv (length=16)
      */
     public static String generateHexIv() {
         List<Integer> list = Arrays.stream(RandomUtil.randomInts(16)).boxed().collect(Collectors.toList());
@@ -43,6 +43,9 @@ public class AesUtil {
 
     /**
      * 加密，使用UTF-8编码
+     *
+     * @param data 被加密的字符串
+     * @return 加密后的Base64
      */
     public static String encryptBase64(String data, String aesKey, String iv) {
         AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
@@ -51,6 +54,9 @@ public class AesUtil {
 
     /**
      * 解密Hex（16进制）或Base64表示的字符串，默认UTF-8编码
+     *
+     * @param data 被解密的String
+     * @return 解密后的String
      */
     public static String decryptStr(String data, String aesKey, String iv) {
         AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
