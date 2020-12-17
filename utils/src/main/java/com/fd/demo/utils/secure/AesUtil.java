@@ -1,11 +1,16 @@
 package com.fd.demo.utils.secure;
 
 import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.Mode;
 import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author ：zxq
@@ -13,29 +18,42 @@ import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
  */
 public class AesUtil {
 
-    /** 默认的AES加密方式：AES/CBC/PKCS5Padding */
-    public static String getHexAesKey(){
+    /**
+     * 生成一个随机的 128 位 AES秘钥
+     */
+    public static String generateHexAesKey() {
         byte[] encoded = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
         return HexUtil.encodeHexStr(encoded);
     }
 
-    /** 默认的AES加密方式：AES/CBC/PKCS5Padding */
-    public static byte[] getAesKey(){
-        return SecureUtil.aes().getSecretKey().getEncoded();
+    /**
+     * 生成一个随机的 128 位 AES秘钥
+     */
+    public static byte[] generateAesKey() {
+        return SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue()).getEncoded();
     }
 
-    /** 默认的AES加密方式：AES/CBC/PKCS5Padding */
-    public static byte[] getAesKey(String iv){
-        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, "0CoJUm6Qyw8W8jud".getBytes(), "0102030405060708".getBytes());
-        return SecureUtil.aes().getSecretKey().getEncoded();
+    /**
+     * 加密，使用UTF-8编码
+     */
+    public static String encryptBase64(String data, String aesKey, String iv) {
+        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
+        return aes.encryptBase64(data);
     }
 
-    public static void main(String[] args) {
-        byte[] bytes = "0CoJUm6Qyw8W8jud".getBytes();
-        System.out.println(bytes.length);
-        for (byte aByte : bytes) {
+    /**
+     * 解密Hex（16进制）或Base64表示的字符串，默认UTF-8编码
+     */
+    public static String decryptStr(String data, String aesKey, String iv) {
+        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
+        return aes.decryptStr(data);
+    }
 
-            System.out.println(aByte);
-        }
+    /**
+     * 生成一个 128位 16进制的iv
+     */
+    public static String generateHexIv(){
+        List<Integer> list = Arrays.stream(RandomUtil.randomInts(16)).boxed().collect(Collectors.toList());
+        return list.stream().map(HexUtil::toHex).collect(Collectors.joining());
     }
 }
