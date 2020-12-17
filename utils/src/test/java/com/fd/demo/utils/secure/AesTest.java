@@ -25,19 +25,19 @@ public class AesTest {
         jsonObject.put("empty", null);
 
         String json = jsonObject.toJSONString();
-        System.out.println(json);
+        log.info("data: {}",json);
 
         String hexAesKey = AesUtil.generateHexAesKey();
-        System.out.println(hexAesKey);
+        log.info("hexAesKey: {}",hexAesKey);
 
         String iv = AesUtil.generateHexIv();
-        System.out.println(iv);
+        log.info("iv: {}",iv);
 
         String encryptBase64 = AesUtil.encryptBase64(json, hexAesKey, iv);
-        System.out.println(encryptBase64);
+        log.info("encryptBase64: {}",encryptBase64);
 
         String decryptStr = AesUtil.decryptStr(encryptBase64, hexAesKey, iv);
-        System.out.println(decryptStr);
+        log.info("decryptStr: {}",decryptStr);
     }
 
     public static List<String> mockList() {

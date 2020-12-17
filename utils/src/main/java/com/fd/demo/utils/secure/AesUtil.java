@@ -34,6 +34,14 @@ public class AesUtil {
     }
 
     /**
+     * 生成一个 128位 16进制的iv
+     */
+    public static String generateHexIv() {
+        List<Integer> list = Arrays.stream(RandomUtil.randomInts(16)).boxed().collect(Collectors.toList());
+        return list.stream().map(HexUtil::toHex).collect(Collectors.joining());
+    }
+
+    /**
      * 加密，使用UTF-8编码
      */
     public static String encryptBase64(String data, String aesKey, String iv) {
@@ -47,13 +55,5 @@ public class AesUtil {
     public static String decryptStr(String data, String aesKey, String iv) {
         AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, aesKey.getBytes(), iv.getBytes());
         return aes.decryptStr(data);
-    }
-
-    /**
-     * 生成一个 128位 16进制的iv
-     */
-    public static String generateHexIv(){
-        List<Integer> list = Arrays.stream(RandomUtil.randomInts(16)).boxed().collect(Collectors.toList());
-        return list.stream().map(HexUtil::toHex).collect(Collectors.joining());
     }
 }
