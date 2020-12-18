@@ -17,7 +17,7 @@ public class JsonMock {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", "测试_Test-123");
         jsonObject.put("like", mockList());
-        jsonObject.put("birth", new Date());
+        jsonObject.put("birth", new Date(1608281243000L));
         jsonObject.put("emptyArray", new ArrayList<>());
         jsonObject.put("emptyStr", "");
         jsonObject.put("empty", null);
