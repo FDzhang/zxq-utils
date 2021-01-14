@@ -10,9 +10,19 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping
-class helloController {
+class helloController(val helloService: HelloService) {
     @GetMapping("/hello")
     fun helloKotlin(): String {
         return "hello kotlin"
+    }
+
+    @GetMapping("/hello-service")
+    fun helloKotlinService(): String {
+        return helloService.getHello()
+    }
+
+    @GetMapping("hello-dto")
+    fun helloDTO():HelloDTO{
+        return HelloDTO("hello kotlin from the dto")
     }
 }
