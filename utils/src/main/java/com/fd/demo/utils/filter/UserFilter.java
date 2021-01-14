@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@Order(1)
-@WebFilter(filterName = "UserFilter", urlPatterns = "/*")
-@Slf4j
+//@Order(1)
+//@WebFilter(filterName = "UserFilter", urlPatterns = "/*")
+//@Slf4j
 public class UserFilter implements Filter {
 
     @Override
