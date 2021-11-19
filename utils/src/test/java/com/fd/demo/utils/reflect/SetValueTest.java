@@ -4,6 +4,7 @@ import lombok.Data;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 
 
 /**
@@ -13,13 +14,13 @@ import java.lang.reflect.Field;
 class SetValueTest {
 
     @Data
-    static class User{
+    static class User {
         private String name;
         private Integer age;
     }
 
     @Test
-    void userTest(){
+    void userTest() {
         User u = new User();
 
         System.err.println(u);
@@ -27,7 +28,7 @@ class SetValueTest {
         System.err.println(u);
     }
 
-    public <T> void buildUser(T entity){
+    public <T> void buildUser(T entity) {
         Class<?> clazz = entity.getClass();
         try {
             // 获取字段
@@ -45,4 +46,39 @@ class SetValueTest {
             e.printStackTrace();
         }
     }
+
+    // version 2
+    static public <T> void buildUser2(T entity, User user) {
+        Class<?> clazz = entity.getClass();
+        try {
+            for (Field field : clazz.getDeclaredFields()) {
+                String name = field.getName();
+                if (type1(name)) {
+                    field.setAccessible(true);
+                    field.set(entity, user.getAge());
+                } else if (type2(name)) {
+                    field.setAccessible(true);
+                    field.set(entity, user.getName());
+                } else if (type3(name)) {
+                    field.setAccessible(true);
+                    field.set(entity, new Date());
+                }
+            }
+        } catch (Exception e) { // 此异常为 实体内字段不存在
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean type1(String name) {
+        return name.equals("age");
+    }
+
+    private static boolean type2(String name) {
+        return name.equals("name");
+    }
+
+    private static boolean type3(String name) {
+        return name.equals("createTime") || name.equals("updateTime");
+    }
+
 }
